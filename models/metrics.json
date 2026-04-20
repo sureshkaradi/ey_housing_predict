@@ -1,0 +1,29 @@
+{
+  "train_mse": 53773103.62245208,
+  "test_mse": 105617714.99949078,
+  "train_r2": 0.9915190858549427,
+  "test_r2": 0.9811236825880004,
+  "train_mae": 5719.588401663988,
+  "test_mae": 7916.198062090215,
+  "model_coefficients": [
+    -74386.90070750567,
+    -5764.347493572389,
+    718.9627214285641,
+    22387.220114240576,
+    78564.09371911858,
+    37930.131627035356,
+    20169.271543757266
+  ],
+  "model_intercept": 270374.9999999999,
+  "feature_names": [
+    "square_footage",
+    "bedrooms",
+    "bathrooms",
+    "year_built",
+    "lot_size",
+    "distance_to_city_center",
+    "school_rating"
+  ],
+  "training_samples": 40,
+  "test_samples": 10
+}
