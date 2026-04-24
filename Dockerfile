@@ -1,28 +1,33 @@
-FROM python:3.12-slim
+FROM python:3.12-slim AS base
 
 WORKDIR /app
 
-# Install system dependencies
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies, Node.js, and build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash \
+    curl \
+    ca-certificates \
     build-essential \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+COPY next-portal/package.json next-portal/package-lock.json* ./next-portal/
+RUN cd next-portal && npm install
+
 COPY . .
 
-# Train the model on startup
+RUN cd next-portal && npm run build
 RUN python train_model.py
 
-# Expose port
-EXPOSE 8000
+COPY run_services.sh ./run_services.sh
+RUN chmod +x ./run_services.sh
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')"
+EXPOSE 3000 8080 8081
 
-# Run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./run_services.sh"]
